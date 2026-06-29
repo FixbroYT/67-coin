@@ -1,0 +1,7 @@
+aiogram
+sqlalchemy[asyncio]
+fastapi
+python-dotenv
+pydantic
+uvicorn
+asyncpg

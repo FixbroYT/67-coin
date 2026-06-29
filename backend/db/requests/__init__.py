@@ -1,0 +1,1 @@
+from db.requests import locations, quests, upgrades, users, minigames, leadmagnets, referrals
