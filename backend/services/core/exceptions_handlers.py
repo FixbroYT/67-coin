@@ -8,7 +8,7 @@ from logger import get_logger
 logger = get_logger(__name__)
 
 
-async def game_service_exceptions_handler(request: Request, exc: GameServiceException):
+async def game_service_exceptions_handler(request: Request, exc: GameServiceException) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -21,7 +21,7 @@ async def game_service_exceptions_handler(request: Request, exc: GameServiceExce
     )
 
 
-async def unknown_error_handler(request: Request, exc: Exception):
+async def unknown_error_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.error(f"Unknown error occured with request: {request.url.path}, Exception: {exc}")
 
     return JSONResponse(

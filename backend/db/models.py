@@ -159,7 +159,7 @@ class UserQuest(Base):
 
 
 class Referral(Base):
-    __tablename__ = "referals"
+    __tablename__ = "referrals"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     referrer_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
