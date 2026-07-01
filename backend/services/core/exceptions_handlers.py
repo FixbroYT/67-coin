@@ -1,14 +1,13 @@
-import logging
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from services.core.exceptions import GameServiceException
+from services.core.exceptions import GameServiceException, AuthorizationException
 
 from logger import get_logger
 
 logger = get_logger(__name__)
 
 
-async def game_service_exceptions_handler(request: Request, exc: GameServiceException) -> JSONResponse:
+async def game_service_exceptions_handler(request: Request, exc: GameServiceException | AuthorizationException) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -22,7 +21,7 @@ async def game_service_exceptions_handler(request: Request, exc: GameServiceExce
 
 
 async def unknown_error_handler(request: Request, exc: Exception) -> JSONResponse:
-    logger.error(f"Unknown error occured with request: {request.url.path}, Exception: {exc}")
+    logger.error(f"Unknown error occured with request: {request.url.path}, Exception: {exc}", exc_info=exc)
 
     return JSONResponse(
         status_code=500,

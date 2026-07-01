@@ -1,18 +1,20 @@
 import logging
 import os
+import sys
 from colorama import Fore, Style, init
-from logging.handlers import TimedRotatingFileHandler
+from config import settings
 
-init(autoreset=True)
-
-LOGS_DIR = "logs"
-os.makedirs(LOGS_DIR, exist_ok=True)
+init(autoreset=True, strip=not settings.USE_COLOR)
 
 
 class AccessLogFormatter(logging.Formatter):
     def format(self, record):
         msg = record.getMessage()
-        
+
+        if not settings.USE_COLOR:
+            time_str = self.formatTime(record, "%H:%M:%S")
+            return f"{time_str} | {'INFO':<8} | access | {msg}"
+
         time_str = f"{Fore.LIGHTBLACK_EX}{self.formatTime(record, '%H:%M:%S')}{Style.RESET_ALL}"
         level_str = f"{Fore.GREEN}{'INFO':<8}{Style.RESET_ALL}"
         name_str = f"{Fore.MAGENTA}access{Style.RESET_ALL}"
@@ -27,8 +29,8 @@ class AccessLogFormatter(logging.Formatter):
             elif status_code < 500:
                 status_color = Fore.YELLOW
             else:
-                status_color = Fore.RED 
-            
+                status_color = Fore.RED
+
             parts = msg.rsplit(" ", 1)
             msg = f"{parts[0]} {status_color}{parts[1]}{Style.RESET_ALL}"
         except (ValueError, IndexError):
@@ -39,12 +41,17 @@ class AccessLogFormatter(logging.Formatter):
 
 class ColoredConsoleFormatter(logging.Formatter):
     def format(self, record):
+        if not settings.USE_COLOR:
+            time_str = self.formatTime(record, "%H:%M:%S")
+            name = record.name.split(".")[-1]
+            return f"{time_str} | {record.levelname:<8} | {name} | {record.getMessage()}"
+
         level_color = {
-            'INFO': Fore.GREEN,
-            'ERROR': Fore.RED,
-            'WARNING': Fore.YELLOW,
-            'DEBUG': Fore.CYAN,
-            'CRITICAL': Fore.RED + Style.BRIGHT
+            "INFO": Fore.GREEN,
+            "ERROR": Fore.RED,
+            "WARNING": Fore.YELLOW,
+            "DEBUG": Fore.CYAN,
+            "CRITICAL": Fore.RED + Style.BRIGHT,
         }.get(record.levelname, Fore.WHITE)
 
         time_str = f"{Fore.LIGHTBLACK_EX}{self.formatTime(record, '%H:%M:%S')}{Style.RESET_ALL}"
@@ -55,55 +62,65 @@ class ColoredConsoleFormatter(logging.Formatter):
         return f"{time_str} | {level_str} | {name_str} | {msg}"
 
 
-class PlainFileFormatter(logging.Formatter):
-    def format(self, record):
-        time_str = self.formatTime(record, '%Y-%m-%d %H:%M:%S')
-        result = f"{time_str} | {record.levelname:<8} | {record.name} | {record.getMessage()}"
-        if record.exc_info:
-            result += "\n" + self.formatException(record.exc_info)
-        return result
+class MaxLevelFilter(logging.Filter):
+    def __init__(self, max_level: int):
+        super().__init__()
+        self.max_level = max_level
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.levelno <= self.max_level
+
+
+class WebSocketConnectFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return "WebSocket" not in record.getMessage()
+
+
+def _make_console_handlers(formatter: logging.Formatter):
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setFormatter(formatter)
+    stdout_handler.setLevel(logging.DEBUG)
+    stdout_handler.addFilter(MaxLevelFilter(logging.INFO))
+
+    stderr_handler = logging.StreamHandler(sys.stderr)
+    stderr_handler.setFormatter(formatter)
+    stderr_handler.setLevel(logging.WARNING)
+
+    return stdout_handler, stderr_handler
 
 
 def setup_logging():
-    file_handler = TimedRotatingFileHandler(
-        os.path.join(LOGS_DIR, "app.log"),
-        when="midnight",
-        backupCount=5,
-        encoding="utf-8"
-    )
-    file_handler.setFormatter(PlainFileFormatter())
-    file_handler.setLevel(logging.INFO)
+    console_formatter = ColoredConsoleFormatter()
+    access_formatter = AccessLogFormatter()
 
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(ColoredConsoleFormatter())
-    console_handler.setLevel(logging.INFO)
-
-    access_console_handler = logging.StreamHandler()
-    access_console_handler.setFormatter(AccessLogFormatter())
-    access_console_handler.setLevel(logging.INFO)
+    console_out, console_err = _make_console_handlers(console_formatter)
+    access_out, access_err = _make_console_handlers(access_formatter)
 
     for name in ("uvicorn", "uvicorn.error", "fastapi"):
         uvi_logger = logging.getLogger(name)
         uvi_logger.handlers.clear()
         uvi_logger.propagate = False
         uvi_logger.setLevel(logging.INFO)
-        uvi_logger.addHandler(console_handler)
-        uvi_logger.addHandler(file_handler)
+        uvi_logger.addHandler(console_out)
+        uvi_logger.addHandler(console_err)
 
     access_logger = logging.getLogger("uvicorn.access")
     access_logger.handlers.clear()
     access_logger.propagate = False
     access_logger.setLevel(logging.INFO)
-    access_logger.addHandler(access_console_handler)
-    access_logger.addHandler(file_handler)
+    access_logger.addHandler(access_out)
+    access_logger.addHandler(access_err)
+
+    ws_filter = WebSocketConnectFilter()
+    console_out.addFilter(ws_filter)
+    console_err.addFilter(ws_filter)
 
     root = logging.getLogger()
     root.setLevel(logging.INFO)
     root.handlers.clear()
-    root.addHandler(console_handler)
-    root.addHandler(file_handler)
+    root.addHandler(console_out)
+    root.addHandler(console_err)
 
 
 def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
-    

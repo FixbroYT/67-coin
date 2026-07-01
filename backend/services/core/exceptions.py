@@ -46,4 +46,15 @@ class InvalidAmountOfClicksException(GameServiceException):
 
 class UserAlreadyExistsException(GameServiceException):
     def __init__(self, message: str = "The attempt to create the user was unsuccessful because the user already exists."):
-        super().__init__(message, status_code=409)    
+        super().__init__(message, status_code=409)
+
+
+class AuthorizationException(Exception):
+    def __init__(self, message: str, status_code: int = 401):
+        self.message = message
+        self.status_code = status_code
+        super().__init__(self.message)
+
+class TelegramValidationException(AuthorizationException):
+    def __init__(self, message: str = "Invalid Telegram initData format or hash"):
+        super().__init__(message, status_code=401)

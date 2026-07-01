@@ -2,13 +2,22 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     DATABASE_URL: str
+    
     BOT_TOKEN: str
     ADMIN_ID: int
+
+    HOST: str
+    PORT: int
+    RELOAD: bool
+
+    USE_COLOR: bool
+
     FRONT_URL: str
     CHAT_ID: str
     
     class Config:
-        env_file = ".env"
+        env_file = ".env", 
+        extra="ignore"
 
 
 class GameBalanceSettings(BaseSettings):
