@@ -1,5 +1,5 @@
 from api.schemas.generic import ResponseSchema
-from api.schemas.users import ProcessClick, GetUserIncomeResponse, WSRequest
+from api.schemas.users import ProcessClick, WSRequest
 
 from api.core import GetUser, GetUserBlock
 from api.core import DBSession

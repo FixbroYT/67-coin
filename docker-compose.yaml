@@ -7,23 +7,21 @@ services:
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     depends_on:
       db:
-        condition: service_healthy  
-    # restart: always
-    # command: sh -c "alembic upgrade head && uvicorn main_api:app --host 0.0.0.0 --port 7000"
-    command: sh -c "alembic upgrade head && uvicorn main_api:app --host 0.0.0.0 --port 7000 --reload"
+        condition: service_healthy 
+    command: sh -c "alembic upgrade head && python -u main_api.py"
     ports:
       - "7000:7000"
     volumes:
       - ./backend:/app
   frontend:
     build: ./frontend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     environment:
       - VITE_API_URL=${VITE_API_URL}
     ports:
       - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
   db:
     image: postgres:17.0
     environment:
