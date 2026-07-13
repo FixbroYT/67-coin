@@ -21,7 +21,7 @@ class Settings(BaseSettings):
 
 
 class GameBalanceSettings(BaseSettings):
-    UPGRADE_PRICE_MULTIPLIER: float = 1.1   
+    UPGRADE_PRICE_MULTIPLIER: float = 1.2  
 
     MAX_CLICK_AMOUNT_PER_REQUEST:  int = 25
     PROCESS_CLICK_RATE_LIMIT: int = 1200

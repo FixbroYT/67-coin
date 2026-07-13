@@ -4,7 +4,7 @@ from services.dto.upgrades import BuyUpgradeDTO
 from services.dto.users import ClaimPendingPassiveIncomeDTO
 
 from services.core.exceptions import NotEnoughMoneyException, TooLowLvlException, ObjectNotFoundException
-from services.users import get_internal_user, claim_pending_passive_income, update_user_energy
+from services.users import get_user_income, claim_pending_passive_income, update_user_energy
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -56,6 +56,7 @@ async def buy_upgrade(session: AsyncSession, user: User, upgrade_id: int) -> Buy
         user.energy += upgrade.bonus
 
     energy_data = await update_user_energy(session, user)
+    click_income = await get_user_income(session, user, "click")
 
     await session.commit()
     
@@ -64,6 +65,7 @@ async def buy_upgrade(session: AsyncSession, user: User, upgrade_id: int) -> Buy
         upgrade_count=user_upgrade.count,
         cost=user_upgrade.next_price,
         bonus=user_upgrade.bonus,
+        click_income=click_income,
         passive_income=passive_income_data,
         energy=energy_data
     )

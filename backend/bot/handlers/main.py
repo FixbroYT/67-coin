@@ -30,6 +30,7 @@ async def cmd_start(message: Message):
         )
     except Exception as exc:
         logger.error(exc)
+        await message.answer("Something went wrong. Please try again later.")
 
     await message.answer(f"Welcome to 67 coin, {message.from_user.username}!", reply_markup=InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="PLAY!", web_app=WebAppInfo(url=settings.FRONT_URL))]

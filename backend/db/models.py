@@ -124,8 +124,8 @@ class Quest(Base):
     __tablename__ = "quests"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String)
-    description: Mapped[str] = mapped_column(String)
+    name: Mapped[str] = mapped_column(String, server_default="name")
+    desc: Mapped[str] = mapped_column(String, server_default="desc")
     
     base_reward: Mapped[int] = mapped_column(Integer)
     reward_multiplier: Mapped[float] = mapped_column(Float, server_default="1.5", default=1.5)
