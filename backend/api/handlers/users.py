@@ -91,6 +91,7 @@ async def _handle_message(ws_session: GameWebSocketSession, tg_id: int, packet: 
                     data={
                         "coins": user.coins,
                         "xp": user.xp,
+                        "lvl": user.lvl,
                         "energy": user.energy,
                         "total_taps": user.total_taps
                     })

@@ -3,17 +3,17 @@ import { useGame } from "../../../context/GameContext"
 import { formatNum } from "../../../utils/formatNum"
 import { getRankName } from "../../../utils/ranks"
 
-interface SubContainerArgs {
+interface SubContainerProps {
     text: string
     content: string
     color: string
 }
 
-const SubContainer = (data: SubContainerArgs) => {
+const SubContainer = ({ text, content, color }: SubContainerProps) => {
     return (
         <div className="w-7/16 h-full flex flex-col">
-            <span className="font-medium text-xs tracking-widest" style={{ color: colors.textGray }}>{data.text}</span>
-            <span className="font-bold text-md" style={{ color: data.color }}>{data.content}</span>
+            <span className="font-medium text-xs tracking-widest" style={{ color: colors.textGray }}>{text}</span>
+            <span className="font-bold text-md" style={{ color: color }}>{content}</span>
         </div>
     )
 }
@@ -32,9 +32,9 @@ export default function UpgradesInfo() {
             </span>
 
             <div className="w-full h-full flex justify-between">
-                <SubContainer text="CLICK INCOME" content={formatNum(user?.click_income)} color={colors.primaryBlue}/>
+                <SubContainer text="CLICK INCOME" content={formatNum(user.click_income)} color={colors.primaryBlue}/>
                 <div className="w-0.5 h-full rounded-2xl" style={{ background: "#1d2027" }}/>
-                <SubContainer text="RANK" content={getRankName(user?.lvl)} color="#ddc981"/>
+                <SubContainer text="RANK" content={getRankName(user.lvl)} color="#ddc981"/>
             </div>
         </div>
     )

@@ -9,7 +9,7 @@ export type SetState<T> = Dispatch<SetStateAction<T>>
 export const UserSchema = z.object({
     coins: z.number(),
     xp: z.number(),
-    lvl: z.number().optional(),
+    lvl: z.number(),
     current_loc_id: z.number(),
     click_income: z.number(),
     passive_income: z.number(),

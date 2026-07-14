@@ -5,8 +5,10 @@ import { formatNum } from "../../../utils/formatNum"
 import colors from "../../../utils/colors"
 
 export default function CoinsDisplay() {
-    const { user, locations } = useGame()
-    let balance = formatNum(user?.coins)
+    const { user } = useGame()
+    if (!user) return null
+
+    const balance = formatNum(user.coins)
 
     return (
         <div className="flex justify-center items-center flex-col h-[14vh]">
@@ -15,16 +17,18 @@ export default function CoinsDisplay() {
                 {balance}
             </span>
             <div className="flex gap-3 mt-3">
-                <div className="p-1 rounded-2xl px-2 font-jakarta text-md flex justify-center items-center" style={{ background: colors.cardGray, width: "40vw" }}>
+                <div className="p-1 rounded-2xl px-2 font-jakarta text-md flex justify-center items-center w-[40vw]" style={{ background: colors.cardGray }}>
                     <span>
-                        <span className="mr-2" style={{ color: colors.textGray }}>Rank</span>
-                        <span style={{ color: colors.primaryBlue }}>#{user?.rank}</span>
+                        <span className="mr-2 text-[#95979f]">Rank</span>
+                        <span className="text-[#00e3fd]">#{user?.rank}</span>
                     </span>
                 </div>
-                <div className="p-1 rounded-2xl px-2 font-jakarta text-md flex justify-center items-center" style={{ background: colors.cardGray, width: "40vw" }}>
+                <div className="p-1 rounded-2xl px-2 font-jakarta text-md flex justify-center items-center w-[40vw]" style={{ background: colors.cardGray }}>
                     <span>
-                        <span className="mr-2" style={{ color: colors.textGray }}>Multiplier</span>
-                        <span style={{ color: colors.textPurple }}>x {locations && locations[user?.curr_loc_id - 1]?.multiplier.toFixed(1)}</span>
+                        <span className="text-[#00e3fd] flex items-center">
+                            + {formatNum(user?.passive_income * 3600, true)}
+                            <span className="ml-2 text-[#95979f] font-semibold"> / hr</span>
+                        </span>
                     </span>
                 </div>
             </div>

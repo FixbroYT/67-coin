@@ -5,7 +5,7 @@ import locations from "../../../assets/locations.svg"
 
 export default function OverNavbar() {
     return (
-        <div className="w-full p-5 pt-0 flex flex-col">
+        <div className="w-full p-5 pb-0 flex flex-col">
             <Energy />
             <div className="flex gap-3 h-full mt-7">
                 <AdditionalButton img={upgrades} text="UPGRADES"/>

@@ -36,7 +36,7 @@ async def get_energy_restoration(session: AsyncSession, user: User) -> int:
     return energy_per_sec
 
 
-async def update_user_energy(session: AsyncSession, user: User):
+async def update_user_energy(session: AsyncSession, user: User) -> UpdateUserEnergyDTO:
     current_timestamp = int(time.time())
     delta_time = current_timestamp - user.last_energy_calculation
 
@@ -95,17 +95,17 @@ async def process_click(session: AsyncSession, user: User, click_amount: int) ->
 async def get_user_info(session: AsyncSession, user: User) -> GetUserInfoDTO:
     click_income = await get_user_income(session, user, "click")
     passive_income = await get_user_income(session, user, "passive")
-
-    await update_user_energy(session, user)
-    energy_restoration = await get_energy_restoration(session, user)
-
     rank = await db.users.get_user_rank(session, user.coins)
+
+    energy_data = await update_user_energy(session, user)
+    energy_restoration = energy_data.energy_restoration
 
     await session.commit()
 
     return GetUserInfoDTO(
         coins=user.coins,
         xp=user.xp,
+        lvl=user.lvl,
         current_loc_id=user.location_id,
         click_income=click_income,
         passive_income=passive_income,

@@ -2,7 +2,9 @@ import { NavLink } from 'react-router-dom';
 
 import colors from "../../../utils/colors"
 
-export default function AdditionalButton({ img, text }) {
+type AdditionalButtonProps = { img: string, text: string }
+
+export default function AdditionalButton({ img, text }: AdditionalButtonProps) {
     return (
         <NavLink to={`/${text.toLowerCase()}`} className="w-1/2 h-fit rounded-4xl p-3" style={{ background: colors.cardGray }}>
             <div className="flex flex-col items-center">

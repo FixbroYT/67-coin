@@ -1,11 +1,13 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useGame } from './context/GameContext';
 import { useEnergyRecovery } from './hooks/useEnergyRecovery';
 
+import { fetchToState } from './api/dataFetcher';
 import { gameApi } from './api/endpoints';
+import { WSManager } from './api/websocket';
 
 import Main from './pages/Main/Main';
 import Play from './pages/Play/Play';
@@ -18,55 +20,23 @@ import Slots from './pages/Slots/Slots';
 import CommunityPool from './pages/CommunityPool/CommunityPool';
 
 import Navbar from './components/Navbar'
-import { useTelegram } from './hooks/useTelegram';
 import LoadingScreen from './components/LoadingScreen';
-import { styledToast } from './components/styledToast';
+
+import { Toaster } from 'react-hot-toast';
 
 
 function App() {
   const { setUser, user } = useGame()
-  const WebApp = useTelegram()
 
   useEffect(() => {
-    const MAX_RETRIES = 5
-    let retryCount = 0
-    let timerId: number
+    fetchToState(gameApi.getUser, setUser)
+  }, [])
 
-    const fetchData = async () => {
-      try {
-        const response = await gameApi.getUser()
-        
-        if (!response.success) {
-          throw new Error("Error with user data fetch.")
-        }
-        
-        const userData = response.data
-        
-        setUser({ ...userData, lvl: Math.floor(userData.xp / 1000) })
-        
-        if (timerId) clearTimeout(timerId)
-        return
-      
-      } catch (error) {
-        console.error("Fetch error: ", error)
-        
-        if (retryCount < MAX_RETRIES) {
-          retryCount++
-          console.log(`Retry #${retryCount} in 5 seconds...`)
-          timerId = setTimeout(fetchData, 5000)
-        } else {
-          console.error(`Failed to load data after ${MAX_RETRIES} retries.`)
-          styledToast("error", "Something went wrong. Please try again later.")
-        }
-      }
-    }
+  useEffect(() => {
+    WSManager.connect()
 
-    fetchData()
-    
-    return () => {
-      if (timerId) clearTimeout(timerId)
-    }
-  }, [WebApp, setUser])
+    return WSManager.disconnect
+  }, [])
 
   useEnergyRecovery(setUser, user)
 
@@ -74,15 +44,15 @@ function App() {
     <Router>
       {user ? (
         <div className="app-container" style={{ height: '100vh' }}>
-          <div className="content h-full min-h-screen pb-20">
+          <div className="content h-full min-h-screen pb-[11vh]">
             <Routes>
               <Route path="/" element={<Main />} />
               {/* <Route path="/play" element={<Play />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/earn" element={<Earn />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile" element={<Profile />} /> */}
               <Route path="/upgrades" element={<Upgrades />} />
-              <Route path="/locations" element={<Locations />} /> 
+              {/* <Route path="/locations" element={<Locations />} /> 
               <Route path="/slots" element={<Slots />}/>
               <Route path="/community-pool" element={<CommunityPool />}/> */}
             </Routes>
@@ -93,6 +63,7 @@ function App() {
       ) : (
         <LoadingScreen />
       )}
+    <Toaster position="top-center" reverseOrder={false} />
     </Router>
   )
 }

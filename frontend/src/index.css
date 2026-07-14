@@ -23,15 +23,6 @@
   }
 }
 
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 @layer utilities {
   .bg-gradient-purple {
     background: var(--gradient-purple);
@@ -51,8 +42,5 @@
   .animate-float {
     animation: floatUp 0.8s ease-out forwards;
     will-change: transform, opacity;
-  }
-  .animate-rotate {
-    animation: rotate 2s infinite linear;
   }
 }

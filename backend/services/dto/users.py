@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 class GetUserInfoDTO(BaseModel):
     coins: int = Field(..., description="Amount of user's coins.")
     xp: int = Field(..., description="Amount of user's xp.")
+    lvl: int = Field(..., description="Current user lvl.")
     current_loc_id: int = Field(..., description="Id of location which user currently on.")
     click_income: int = Field(..., description="Income per click.")
     passive_income: int = Field(..., description="Passive income per second.")

@@ -3,7 +3,6 @@ import Header from "../../components/Header"
 import { useEffect, useRef, useState } from "react"
 import { spinSlots } from "../../api/client"
 import { useGame } from "../../context/GameContext"
-import { Toaster } from "react-hot-toast"
 import { styledToast } from "../components/styledToast"
 import { formatNum } from "../../utils/formatNum"
 
@@ -188,14 +187,12 @@ export default function Slots() {
                 <div className="w-full flex justify-between">
                     <StakeButton onClick={() => setStakeValue((prev) => prev * 0.3 >= min ? Math.floor(prev * 0.3) : min)} label="1/3" />
                     <StakeButton onClick={() => setStakeValue((prev) => prev * 2 <= max ? Math.floor(prev * 2) : max)} label="x2" />
-                    <StakeButton onClick={() => setStakeValue(max)} label="Max" />
+                    <StakeButton onClick={() => setStakeValue(max < user?.coins ? user?.coins : max)} label="Max" />
                 </div>
             </div> 
             <button className="w-full h-15 rounded-full bg-gradient-purple drop-shadow-[0_0_10px_rgba(126,81,255,0.3)] duration-150 active:scale-98 uppercase text-[#280072] font-semibold text-xl tracking-wider disabled:opacity-40 disabled:active:scale-100" onClick={handleSubmit} disabled={isSpinning}>
                 spin
             </button>
-
-            <Toaster position="top-center" reverseOrder={false} />
         </div>
     )
 }

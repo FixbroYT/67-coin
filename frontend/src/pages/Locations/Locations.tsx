@@ -2,7 +2,6 @@ import Header from "../../components/Header";
 import colors from "../../utils/colors";
 import LocationCard from "../components/Locations/LocationCard";
 import { useGame } from "../../context/GameContext";
-import { Toaster } from 'react-hot-toast';
 
 
 export default function Locations() {
@@ -20,7 +19,6 @@ export default function Locations() {
                     )
                 })}
             </div>
-            <Toaster position="top-center" reverseOrder={false} />
         </div>
     )
 }

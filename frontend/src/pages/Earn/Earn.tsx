@@ -1,7 +1,6 @@
 import coin from "../assets/coin.svg"
 import PromLink from "./PromLink"
 import { useGame } from "../../context/GameContext"
-import { Toaster } from "react-hot-toast"
 import { formatNum } from "../../utils/formatNum"
 
 export default function Earn() {
@@ -36,8 +35,6 @@ export default function Earn() {
                     )
                 })}
             </div>
-
-            <Toaster position="top-center" reverseOrder={false} />
         </div>
     )
 }

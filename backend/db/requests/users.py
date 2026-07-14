@@ -2,7 +2,7 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.models import async_session, User, Referral
+from db.models import User, Referral
 
 
 async def get_user(session: AsyncSession, tg_id: int, block_needed: bool = False) -> User:

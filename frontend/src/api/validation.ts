@@ -8,7 +8,7 @@ export async function validateResponse<Schema extends z.ZodTypeAny>(requestPromi
         if (error instanceof z.ZodError) {
             console.error("Zod validation failed:", error.format())
         } else {
-            console.error("Unknown error occured with request.")
+            console.error("Unknown error occured with request: ", error)
         }
     }
 }
@@ -20,7 +20,7 @@ export function validateResponseSync<Schema extends z.ZodTypeAny>(response: obje
         if (error instanceof z.ZodError) {
             console.error("Zod validation failed:", error.format())
         } else {
-            console.error("Unknown error occured with request.")
+            console.error("Unknown error occured with request: ", error)
         }
     }
 }

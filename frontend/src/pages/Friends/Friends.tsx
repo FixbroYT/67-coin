@@ -1,7 +1,6 @@
 import { useGame } from "../../context/GameContext";
 import colors from "../../utils/colors";
 import { Zap, Copy } from "lucide-react";
-import { Toaster } from 'react-hot-toast';
 import { formatNum } from "../../utils/formatNum";
 import coin from "../assets/coin.svg"
 import { useEffect, useCallback, useState } from "react";
@@ -114,8 +113,6 @@ export default function Friends() {
                     </div>
                 )}
             </div>
-
-            <Toaster position="top-center" reverseOrder={false} />
         </div>
 
     )

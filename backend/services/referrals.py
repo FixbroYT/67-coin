@@ -13,6 +13,7 @@ async def get_referrals(session: AsyncSession, user_id: int) -> list[GetReferral
         GetReferralsDTO(
             username=referral.referred.username,
             xp=referral.referred.xp,
+            lvl=referral.referred.lvl,
             tg_id=referral.referred.tg_id,
             pending_ref_bonus=referral.calculated_pending_ref_bonus,
             earned_coins=referral.earned_coins

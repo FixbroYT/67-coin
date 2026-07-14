@@ -5,9 +5,7 @@ import './index.css'
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <GameProvider>
-      <App />
-    </GameProvider>
-  </StrictMode>,
+  <GameProvider>
+    <App />
+  </GameProvider>,
 )

@@ -1,5 +1,5 @@
 import { validateResponseSync } from "./validation"
-import { createDefaultResponse, ProcessClick } from "../types/Api"
+import { createDefaultResponse, ProcessClickResp } from "../types/Api"
 
 type WebSocketCallback = (data: any) => void
 
@@ -52,10 +52,10 @@ class WebSocketManager {
     private handleMessage(rawData: string) {
         try {
             const parsed = JSON.parse(rawData)
-            validateResponseSync(parsed, createDefaultResponse(ProcessClick))
-            const { action, data } = parsed
+            validateResponseSync(parsed, createDefaultResponse(ProcessClickResp))
+            const { type, data } = parsed
 
-            const callbacks = this.subscribers.get(action)
+            const callbacks = this.subscribers.get(type)
             if (callbacks) {
                 callbacks.forEach(cb => cb(data))
             }
@@ -93,11 +93,13 @@ class WebSocketManager {
             this.subscribers.set(action, current.filter((cb) => cb !== callback))
         }
     }
-
+    
     public disconnect() {
         this.socket?.close()
         this.socket = null
     }
 }
 
-const WSManager = new WebSocketManager(`${API_URL}/ws`)
+const initData = (window as any).Telegram?.WebApp?.initData
+const encodedData = encodeURIComponent(initData)
+export const WSManager = new WebSocketManager(`${API_URL}/users/ws?initData=${encodedData}`)

@@ -7,7 +7,7 @@ from datetime import datetime, timezone, date
 from config import settings, balance_config
 
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False)
+engine = create_async_engine(settings.DATABASE_URL, echo=False, pool_size=20)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 

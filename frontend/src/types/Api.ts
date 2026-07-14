@@ -1,23 +1,39 @@
-import { z } from "zod"
+import { boolean, success, z } from "zod"
 
+
+export const BaseErrorSchema = z.object({
+    code: z.string(),
+    message: z.string()
+})
 
 export const createDefaultResponse = <T extends z.ZodTypeAny>(dataschema: T) => {
-    return z.object({
-        success: z.boolean(),
-        data: dataschema
-    })
+    return z.union([
+        z.object({
+            success: z.literal(true),
+            data: dataschema
+        }),
+        z.object({
+            success: z.literal(false),
+            error: BaseErrorSchema
+        })
+    ])
 }
 
-export interface DefaultResponse<T> {
-    success: boolean
+export type ResponseUnion<T> = {
+    success: true,
     data: T
+} | {
+    success: false,
+    error: z.infer<typeof BaseErrorSchema>
 }
 
-
-export const ProcessClick = z.object({
-    click_amount: z.number()
+export const ProcessClickResp = z.object({
+    coins: z.number(),
+    xp: z.number(),
+    energy: z.number(),
+    total_taps: z.number()
 })
-export type ProcessClick = z.infer<typeof ProcessClick>
+export type ProcessClickResp = z.infer<typeof ProcessClickResp>
 
 export const PendingRefBonusDataSchema = z.object({
     coins: z.number(),
