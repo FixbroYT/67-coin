@@ -11,8 +11,6 @@ import active_home from '../assets/active_home.svg'
 import active_play from '../assets/active_play.svg'
 import active_profile from '../assets/active_profile.svg'
 
-import colors from "../utils/colors.js"
-
 const images = {
     "Home": home,
     "Play": play,
@@ -26,7 +24,7 @@ const images = {
     "active_Profile": active_profile
 }
 
-function NavbarButton({ text }) {
+function NavbarButton({ text }: { text: string }) {
     return (
         <NavLink 
         to={`/${text === "Home" ? "" : text.toLowerCase()}`} 
@@ -34,7 +32,7 @@ function NavbarButton({ text }) {
             {({ isActive }) => (
                 <>
                     <img className='h-8 w-8' src={images[isActive ? "active_" + text : text]} alt={text} />
-                    <span className='font-bold' style={{ color: isActive ? "#ffffff" : colors.textGray, fontSize: 'clamp(0.8rem, 1.8vw, 0.8rem)' }}>{text}</span>
+                    <span className='font-bold' style={{ color: isActive ? "#ffffff" : "#95979f", fontSize: 'clamp(0.8rem, 1.8vw, 0.8rem)' }}>{text}</span>
                 </>
             )}
         </NavLink>
@@ -44,7 +42,7 @@ function NavbarButton({ text }) {
 export default function Navbar() {
     return (
         <nav className='fixed bottom-0 left-0 w-full p-3 z-50'>
-            <div className="flex justify-evenly items-center p-1 rounded-2xl shadow-2xl font-jakarta drop-shadow-[0_0_55px_rgba(126,81,255,0.1)]" style={{ height: "10vh", background: colors.navbar }}>
+            <div className="flex justify-evenly items-center p-1 rounded-2xl shadow-2xl font-jakarta drop-shadow-[0_0_55px_rgba(126,81,255,0.1)] bg-[#14181e] h-[10vh]">
                 <NavbarButton text="Home" />
                 <NavbarButton text="Play" />
                 <NavbarButton text="Friends" />

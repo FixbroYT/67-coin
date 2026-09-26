@@ -1,5 +1,4 @@
-import { Zap } from "lucide-react";
-import colors from "../../utils/colors";
+import { Zap } from "lucide-react"
 
 
 export default function FriendsInfo() {
@@ -9,7 +8,7 @@ export default function FriendsInfo() {
             
             <span className="text-2xl sm:text-3xl pb-2 text-[#ecedf6] font-bold tracking-wide text-center">Grow Your Squad</span>
             
-            <span className="text-base sm:text-lg px-2 text-center" style={{ color: colors.textGray }}>
+            <span className="text-base sm:text-lg px-2 text-center text-[#95979f]">
                 Invite friends to join the 67 ecosystem and earn massive bonuses together.
             </span>
 

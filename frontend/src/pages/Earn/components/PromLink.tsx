@@ -1,44 +1,19 @@
+import { usePromLink } from "../hooks/usePromLInk"
+
+import { formatNum } from "../../../utils/formatNum"
+import { LeadMagnet } from "../../../types/Game"
+
 import { Users } from "lucide-react"
-import coin from "../../assets/coin.svg"
-import { formatNum } from "../../utils/formatNum"
-import { useState } from "react"
-import { useGame } from "../../context/GameContext"
-import { getLeadmagnetBonus } from "../../api/requests"
-import { styledToast } from "../styledToast"
+import coin from "../../../assets/coin.svg"
 
-export default function PromLink({ name, reward, url, id, isActive }) {
-    const [isClicked, setIsClicked] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const { user, setUser } = useGame()
 
-    const handleClick = async () => {
-        if (loading) return
+interface PromLinkProps {
+    leadmagnet: LeadMagnet,
+    isActive: boolean
+}
 
-        if (isClicked) {
-            setLoading(true)
-            try {
-                const data = await getLeadmagnetBonus(user?.tg_id, id)
-                
-                if (data === undefined || data === null) {
-                    styledToast("error", "You haven't subscribed.")
-                    setIsClicked(false) 
-                    return
-                }
-
-                setUser((prev) => ({ ...prev, ...data }))
-                styledToast("success", "Reward successfully received.")
-                
-            } catch (error) {
-                styledToast("error", "Something went wrong.")
-            } finally {
-                setLoading(false)
-            }
-            return
-        }
-        
-        setIsClicked(true)
-        window.open(url, "_blank")
-    }
+export default function PromLink({ leadmagnet, isActive }: PromLinkProps) {
+    const { handleClick, loading, isClicked } = usePromLink(leadmagnet)
 
     return (
         <div className="w-full h-25 bg-[#161a21] rounded-full flex items-center px-5 font-jakarta justify-between">
@@ -48,9 +23,9 @@ export default function PromLink({ name, reward, url, id, isActive }) {
                 </div>
 
                 <div className="ml-5 flex flex-col">
-                    <span className="text-lg font-semibold tracking-wide text-[#e9eaf3]">{name}</span>
+                    <span className="text-lg font-semibold tracking-wide text-[#e9eaf3]">{leadmagnet.name}</span>
                     <span className="text-[#f8d016] font-bold flex gap-2">
-                        +{formatNum(reward)}
+                        +{formatNum(leadmagnet.reward)}
                         <img src={coin} alt="coin" className="w-5" />
                     </span>
                 </div>

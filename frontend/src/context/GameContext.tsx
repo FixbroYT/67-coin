@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react"
-import { User, Upgrade, UserUpgrade, Location, UserLocation, Quest, UserQuest, Referral, LeadMagnet, ClaimedLeadMagnet, GameContextType, Nullable, GameProvideProps } from "../types/Game"
+import { User, Upgrade, UserUpgrade, Location, UserLocation, Quest, UserQuest, Referral, LeadMagnet, ClaimedLeadMagnet, GameContextType, Nullable, GameProvideProps, DailyStats } from "../types/Game"
 
 const GameContext = createContext<GameContextType | undefined>(undefined) 
 
@@ -14,6 +14,7 @@ export function GameProvider({ children }: GameProvideProps) {
     const [ referrals, setReferrals ] = useState<Nullable<Referral[]>>(null)
     const [ leadmagnets, setLeadmagnets ] = useState<Nullable<LeadMagnet[]>>(null)
     const [ claimedLeadmagnets, setClaimedLeadmagnets ] = useState<Nullable<ClaimedLeadMagnet[]>>(null)
+    const [ dailyStats, setDailyStats ] = useState<Nullable<DailyStats>>(null)
 
     return (
         <GameContext.Provider value={{
@@ -26,7 +27,8 @@ export function GameProvider({ children }: GameProvideProps) {
             userQuests, setUserQuests,
             referrals, setReferrals,
             leadmagnets, setLeadmagnets,
-            claimedLeadmagnets, setClaimedLeadmagnets
+            claimedLeadmagnets, setClaimedLeadmagnets,
+            dailyStats, setDailyStats
         }}>
             {children}
         </GameContext.Provider>

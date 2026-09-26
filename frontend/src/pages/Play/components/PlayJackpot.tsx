@@ -1,13 +1,29 @@
-import { Landmark, Info } from "lucide-react";
-import { useGame } from "../../context/GameContext";
-import { formatNum } from "../../utils/formatNum";
-import { NavLink } from "react-router-dom";
+import { useGame } from "../../../context/GameContext"
+import { useEffect } from "react"
+
+import { fetchToState } from "../../../api/dataFetcher"
+import { gameApi } from "../../../api/endpoints"
+
+import { formatNum } from "../../../utils/formatNum"
+
+import { NavLink } from "react-router-dom"
+
+import { Landmark, Info } from "lucide-react"
+import LoadingScreen from "../../../components/LoadingScreen"
 
 
 export default function PlayJackpot() {
-    const { user } = useGame()
+    const { dailyStats, setDailyStats } = useGame()
 
-    const percentage = user?.daily_deposit / user?.required_daily_deposit * 100 
+    useEffect(() => {
+        if (dailyStats) return
+
+        fetchToState(gameApi.getDailyStats, setDailyStats)
+    })
+
+    if (!dailyStats) return <LoadingScreen />
+
+    const percentage = dailyStats.daily_deposit / dailyStats.required_daily_deposit * 100 
 
     return (
         <div className="w-full h-83 rounded-4xl drop-shadow-[0_0_20px_rgba(126,81,255,0.1)] p-5 font-jakarta flex flex-col" style={{ background: "linear-gradient(44deg,rgba(19, 22, 29, 1) 0%, rgba(26, 26, 42, 1) 100%)" }}>
@@ -38,11 +54,11 @@ export default function PlayJackpot() {
                 <div>
                     <span className="text-[#696c72] uppercase font-semibold text-xs tracking-wide">Your progress</span>
                     <div className="py-1 gap-1 flex items-center">  
-                        <span className="text-white font-semibold text-lg">{formatNum(user?.daily_deposit)}</span>
-                        <span className="text-[#696c72] text-sm font-bold tracking-wide">/ {formatNum(user?.required_daily_deposit)} Wagered</span>
+                        <span className="text-white font-semibold text-lg">{formatNum(dailyStats.daily_deposit)}</span>
+                        <span className="text-[#696c72] text-sm font-bold tracking-wide">/ {formatNum(dailyStats.required_daily_deposit)} Wagered</span>
                     </div>
 
-                    <div className="w-full h-4 rounded-full mt-1 flex items-center justify-start overflow-hidden p-1" style={{ background: "#191c29" }}>
+                    <div className="w-full h-4 rounded-full mt-1 flex items-center justify-start overflow-hidden p-1 bg-[#191c29]">
                         <div className="h-full rounded-full border-gradient-purple" style={{ width: `${percentage}%` }}></div>
                     </div>
                 </div>

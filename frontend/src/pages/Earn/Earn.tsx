@@ -1,17 +1,35 @@
-import coin from "../assets/coin.svg"
-import PromLink from "./PromLink"
 import { useGame } from "../../context/GameContext"
+import { useEffect } from "react"
+
+import { fetchToState } from "../../api/dataFetcher"
+import { gameApi } from "../../api/endpoints"
+
 import { formatNum } from "../../utils/formatNum"
 
+import PromLink from "./components/PromLink"
+import LoadingScreen from "../../components/LoadingScreen"
+
+import coin from "../../assets/coin.svg"
+
+
 export default function Earn() {
-    const { leadmagnets, user } = useGame()
-    const claimedLeadmagnets = leadmagnets?.filter(((leadmagnet, i) => {
-        const id = i + 1
-        if (user?.follow_ids.includes(id)) {
-            return leadmagnet
-        } 
-    }))
-    const totalEarned = claimedLeadmagnets.reduce((acc, leadmagnet) => acc + (leadmagnet.reward || 0), 0)
+    const { user, leadmagnets, setLeadmagnets, claimedLeadmagnets, setClaimedLeadmagnets } = useGame()
+ 
+    useEffect(() => {
+        if (leadmagnets || claimedLeadmagnets) return
+
+        fetchToState(gameApi.getLeadmagnets, setLeadmagnets)
+        fetchToState(gameApi.getClaimedLeadmagnets, setClaimedLeadmagnets)
+    }, [])
+
+    if (!user || !leadmagnets || !claimedLeadmagnets) return <LoadingScreen/>
+
+    const totalEarned = leadmagnets.reduce((acc, leadmagnet) => {
+        if (claimedLeadmagnets.some(el => el.leadmagnet_id == leadmagnet.id)) {
+            return acc + leadmagnet.reward
+        }
+        return acc
+    }, 0)
 
     return (
         <div className="flex flex-col overflow-hidden w-full h-full p-5 font-jakarta shrink-0">
@@ -28,10 +46,9 @@ export default function Earn() {
             <span className="text-[#ecedf6] text-2xl py-7 font-medium tracking-wide">Available Tasks</span>
             
             <div className="w-full h-full shrink-0 overflow-y-auto gap-5 flex flex-col">
-                {leadmagnets.map((leadmagnet, i) => {
-                    const id = i + 1
+                {leadmagnets.map((leadmagnet) => {
                     return (
-                        <PromLink name={leadmagnet.name} reward={leadmagnet.reward} url={leadmagnet.url} id={id} key={`leadmagnet-${id}`} isActive={!user?.follow_ids.includes(id)} />
+                        <PromLink leadmagnet={leadmagnet} key={`leadmagnet-${leadmagnet.id}`} isActive={!claimedLeadmagnets.some(el => el.leadmagnet_id == leadmagnet.id)} />
                     )
                 })}
             </div>

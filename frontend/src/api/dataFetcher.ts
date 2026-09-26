@@ -19,18 +19,18 @@ const fetchWithRetries = async <T> (apiCall: () => Promise<ResponseUnion<T>| und
     }
 }
 
-export const fetchToState = async <T> (apiCall: () => Promise<ResponseUnion<T>| undefined>, setter: SetState<T>) => {
+export const fetchToState = async <T> (apiCall: () => Promise<ResponseUnion<T>| undefined>, onSuccess: (data: T) => void | SetState<T>, retriesNeeded: boolean = true) => {
     try {
-        const response = await fetchWithRetries(apiCall)
+        const response = await fetchWithRetries(apiCall, retriesNeeded ? 5 : 0)
 
         if (!response) {
             styledToast("error", "Data processing error. Please try again later.")
-            return
+            return false
         }
         
         if (response.success) {
-            setter(response.data)
-            return
+            onSuccess(response.data)
+            return response.data
         }
 
         console.warn(`Business logic error: ${response.error.message}`)

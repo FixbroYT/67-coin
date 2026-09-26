@@ -1,6 +1,17 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom"
 
-export default function Game({ img, color, name, desc, secColor, link }) {
+
+interface GameProps {
+    img: string
+    color: string
+    name: string
+    desc: string
+    secColor: string
+    link: string
+}
+
+
+export default function Game({ img, color, name, desc, secColor, link }: GameProps) {
     return (
     <div className={`h-67 w-full p-4 rounded-4xl relative shrink-0 overflow-hidden flex justify-center border`} style={{ borderColor: `${color}26` }}>
         <img 

@@ -7,7 +7,8 @@ export const apiClient = axios.create({
     timeout: 10000,
     headers: {
         "Content-Type": "application/json"
-    }
+    },
+    validateStatus: (status) => status >= 200 && status < 500
 })
 
 apiClient.interceptors.request.use(

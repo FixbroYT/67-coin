@@ -6,5 +6,3 @@ const colors = {
     cardGray: "#1c2028",
     navbar: "#14181e",
 }
-
-export default colors

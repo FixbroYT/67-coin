@@ -61,20 +61,21 @@ export const BuyUpgradeDataSchema = z.object({
     upgrade_count: z.number(),
     cost: z.number(),
     bonus: z.number(),
+    delta_bonus: z.number(),
     passive_income: PassiveIncomeDataSchema.nullable(),
     energy: EnergyDataSchema.nullable(),
 })
 export type BuyUpgradeData = z.infer<typeof BuyUpgradeDataSchema>
 
 export const SetLocationDataSchema = z.object({
-    curr_loc_id: z.number(),
+    current_loc_id: z.number(),
     click_income: z.number(),
 })
 export type SetLocationData = z.infer<typeof SetLocationDataSchema>
 
 export const BuyLocationDataSchema = z.object({
     coins: z.number(),
-    loc_ids: z.array(z.number()),
+    location_id: z.number(),
 })
 export type BuyLocationData = z.infer<typeof BuyLocationDataSchema>
 
@@ -86,7 +87,7 @@ export type RefBonusData = z.infer<typeof RefBonusDataSchema>
 
 export const LeadMagnetBonusDataSchema = z.object({
     coins: z.number(),
-    follow_ids: z.array(z.number()),
+    leadmagnet_id: z.number(),
 })
 export type LeadMagnetBonusData = z.infer<typeof LeadMagnetBonusDataSchema>
 

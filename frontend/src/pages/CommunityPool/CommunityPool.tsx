@@ -1,5 +1,6 @@
-import FortuneWheel from "../components/CommunityPool/FortuneWheel"
-import Header from "../widgets/Header"
+import FortuneWheel from "./components/FortuneWheel"
+import Header from "../../components/Header"
+
 
 export default function CommunityPool() {
     return (

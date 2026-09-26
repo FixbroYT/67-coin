@@ -17,7 +17,7 @@ export const UserSchema = z.object({
     energy: z.number(),
     energy_restoration: z.number(),
     max_energy: z.number(),
-    rank: z.number(),
+    rank: z.number()
 })
 export type User = z.infer<typeof UserSchema>
 
@@ -84,6 +84,7 @@ export type Referral = z.infer<typeof ReferralSchema>
 
 
 export const LeadMagnetSchema = z.object({
+    id: z.number(),
     name: z.string(),
     reward: z.number(),
     url: z.string(),
@@ -92,12 +93,21 @@ export const LeadMagnetSchema = z.object({
 })
 export type LeadMagnet = z.infer<typeof LeadMagnetSchema>
 
+
 export const ClaimedLeadMagnetSchema = z.object({
     leadmagnet_id: z.number(),
 })
 
-
 export type ClaimedLeadMagnet = z.infer<typeof ClaimedLeadMagnetSchema>
+
+export const DailyStatsSchema = z.object({
+    min_bet: z.number(),
+    max_bet: z.number(),
+    daily_deposit: z.number(),
+    required_daily_deposit: z.number()
+})
+
+export type DailyStats = z.infer<typeof DailyStatsSchema>
 
 export interface GameContextType {
     user: Nullable<User>
@@ -129,6 +139,9 @@ export interface GameContextType {
 
     claimedLeadmagnets: Nullable<ClaimedLeadMagnet[]>
     setClaimedLeadmagnets: SetState<Nullable<ClaimedLeadMagnet[]>>
+
+    dailyStats: Nullable<DailyStats>
+    setDailyStats: SetState<Nullable<DailyStats>>
 }
 
 

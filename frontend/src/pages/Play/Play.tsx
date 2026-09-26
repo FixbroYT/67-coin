@@ -1,6 +1,8 @@
-import PlayJackpot from "../components/Play/PlayJackpot"
+import PlayJackpot from "./components/PlayJackpot"
 import Game from "./components/Game"
-import slots from "../assets/Slots.png"
+
+import slots from "../../assets/Slots.png"
+
 
 export default function Play() {
     return (
