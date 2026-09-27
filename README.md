@@ -4,6 +4,10 @@ A Telegram Mini App idle clicker with a real in-game economy: weighted-odds slot
 
 Built with FastAPI (async) + React, served entirely through a single nginx entrypoint so the frontend and API share one origin — no CORS, no split domains.
 
+## A note on how this was built
+
+Every line of this project — backend, frontend, infrastructure — was written by hand. AI tools were used the way documentation or Stack Overflow would be: to look things up, get concepts explained, debug errors, and sanity-check decisions along the way (config layering in nginx, async SQLAlchemy patterns, Docker build stages, and so on). No code was generated wholesale and pasted in. The architecture, the trade-offs, and the debugging were mine — this repository reflects what I actually understand, not what a model produced on my behalf.
+
 ## Screenshots
 
 | Home | Upgrades | Locations |
@@ -83,7 +87,7 @@ Most tutorial-grade clickers are a button and a number. This one has an actual e
 ## Getting started
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/FixbroYT/67-coin
 cd 67-coin
 cp .env.example .env
 cp frontend/.env.example frontend/.env
