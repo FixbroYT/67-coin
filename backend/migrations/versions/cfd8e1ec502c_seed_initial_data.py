@@ -76,7 +76,7 @@ def upgrade() -> None:
             sa.column('url', sa.String),
         ),
         [
-            {'name': 'Youtube', 'icon_name': 'tv-minimal-play', 'color': 'ed2d1f', 'type': 'youtube', 'reward': 10000, 'url': 'https://www.youtube.com/@your-channel'},
+            {'name': 'Youtube', 'icon_name': 'tv-minimal-play', 'color': 'ed2d1f', 'type': 'youtube', 'reward': 10000, 'url': 'https://www.youtube.com'},
         ]
     )
 
