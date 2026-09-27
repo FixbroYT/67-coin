@@ -36,6 +36,22 @@ export default function UpgradeCard({ upgrade, userUpgrade }: UpgradeCardProps) 
     let upgradeBonus = userUpgrade.bonus
     if (upgrade.type === "passive") upgradeBonus *= 3600
 
+    let profitLabel
+    switch (upgrade.type) {
+        case "click":
+            profitLabel = "/click"
+            break
+        case "passive":
+            profitLabel = "/hr"
+            break
+        case "energy_restoration":
+            profitLabel = "En/sec"
+            break
+        case "max_energy":
+            profitLabel = " Energy"
+            break
+    }
+
     const upgradeData = {
         Tag: isLocked ? "div" : "button",
         wrapperClass: isLocked
@@ -65,7 +81,7 @@ export default function UpgradeCard({ upgrade, userUpgrade }: UpgradeCardProps) 
 
         profitText: isLocked
         ? "???"
-        : `+${formatNum(upgradeBonus, true)}/${upgrade.type === "click" ? "click" : "hr"}`,
+        : `+${formatNum(upgradeBonus, true)}${profitLabel}`,
         profitColor: isLocked ? "text-[#95979f]" : "text-[#f9d113]",
 
         priceLabel: isLocked

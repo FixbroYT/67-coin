@@ -74,7 +74,7 @@ class UserUpgrade(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     upgrade_id: Mapped[int] = mapped_column(ForeignKey("upgrades.id"))
-    count: Mapped[int] = mapped_column(default=1, server_default="1")
+    count: Mapped[int] = mapped_column(server_default="0")
 
     user: Mapped["User"] = relationship(back_populates="upgrades", lazy="raise")
     upgrade: Mapped["Upgrade"] = relationship(back_populates="users", lazy="selectin")

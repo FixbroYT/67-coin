@@ -19,6 +19,12 @@ async def add_upgrade_connection(session: AsyncSession, user_id: int, upgrade_id
     return new_user_upgrade
 
 
+async def add_all_upgrade_connections(session: AsyncSession, user_id: int):
+    upgrades = await session.scalars(select(Upgrade))
+    for upgrade in upgrades.all():
+        session.add(UserUpgrade(user_id=user_id, upgrade_id=upgrade.id))
+
+
 async def get_all_upgrades(session: AsyncSession) -> Sequence[Upgrade]:
     upgrades = await session.scalars(select(Upgrade).order_by(Upgrade.id))
     return upgrades.all()

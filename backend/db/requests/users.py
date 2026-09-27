@@ -1,12 +1,12 @@
 from sqlalchemy import select, func
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, load_only
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.models import User, Referral
+from db.models import User, Referral, Location
 
 
 async def get_user(session: AsyncSession, tg_id: int, block_needed: bool = False) -> User:
-    query = select(User).where(User.tg_id == tg_id).options(joinedload(User.location))
+    query = select(User).where(User.tg_id == tg_id).options(joinedload(User.location).options(load_only(Location.bonus_multiplier)))
 
     if block_needed:
         query = query.with_for_update(of=User)

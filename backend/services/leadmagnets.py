@@ -1,5 +1,4 @@
 import db.requests as db 
-from services.users import get_internal_user
 from services.core.loader import bot
 from config import settings
 from typing import Sequence
@@ -12,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import LeadMagnet, User
 
 
-async def get_all(session) -> Sequence[LeadMagnet]:
+async def get_all(session: AsyncSession) -> Sequence[LeadMagnet]:
     leadmagnets = await db.leadmagnets.get_all_leadmagnets(session)
     
     if not leadmagnets:
@@ -44,11 +43,9 @@ async def get_bonus(session: AsyncSession, user: User, leadmagnet_id: int):
     user.coins += leadmagnet.reward
     await db.leadmagnets.create_new_follower(session, user.id, leadmagnet_id)
     await session.commit()
-
-    following = await db.leadmagnets.get_claimed_leadmagnets(session, user.id)
     
     return GetBonusDTO(
         coins=user.coins,
-        follow_ids=[follower.leadmagnet_id for follower in following]
+        leadmagnet_id=leadmagnet_id
     )
 

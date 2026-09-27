@@ -24,7 +24,11 @@ async def get_internal_user(session: AsyncSession, tg_id: int, block_needed: boo
 async def get_user_income(session: AsyncSession, user: User, upgrade_type: str) -> int:
     user_upgrades = await db.upgrades.get_typed_user_upgrades(session, user.id, upgrade_type)
 
-    amount = max(sum([user_upgrade.bonus for user_upgrade in user_upgrades]), 1)
+    min_amount = 1
+    if upgrade_type == "passive":
+        min_amount = 0
+
+    amount = max(sum([user_upgrade.bonus for user_upgrade in user_upgrades]), min_amount)
 
     return int(amount * user.location.bonus_multiplier)
 
@@ -123,7 +127,7 @@ async def _check_if_user_referred(session: AsyncSession, tg_id: int, user: User,
         await session.flush()
 
 
-async def add_user(tg_id: int, username: str, referrer_id: int | None) -> int:
+async def add_user(tg_id: int, username: str, referrer_tg_id: int | None) -> int:
     async with async_session() as session:
         user = await db.users.get_user(session, tg_id)
 
@@ -141,11 +145,13 @@ async def add_user(tg_id: int, username: str, referrer_id: int | None) -> int:
         await session.flush()
         await session.refresh(new_user)
 
-        await _check_if_user_referred(session, tg_id, new_user, referrer_id)
+        if referrer_tg_id:
+            referrer = await get_internal_user(session, referrer_tg_id)
+            await _check_if_user_referred(session, tg_id, new_user, referrer.id)
 
-        await db.locations.add_location_connection(session, user.id, 1)
-        await db.quests.add_quest_connection(user.id)
-        await db.upgrades.add_upgrade_connection(user.id)
+        await db.locations.add_location_connection(session, new_user.id, 1)
+        await db.quests.add_quest_connections(session, new_user.id)
+        await db.upgrades.add_all_upgrade_connections(session, new_user.id)
 
         await session.commit()
 
@@ -163,6 +169,7 @@ async def get_passive_income_data(session: AsyncSession, user: User) -> GetPassi
     pending_coins = delta_seconds * passive_income
 
     return GetPassiveIncomeDataDTO(
+        predicted_coins=user.coins + pending_coins,
         pending_coins=pending_coins,
         delta_time=delta_seconds
     )
@@ -170,14 +177,13 @@ async def get_passive_income_data(session: AsyncSession, user: User) -> GetPassi
 
 async def claim_pending_passive_income(session: AsyncSession, user: User) -> ClaimPendingPassiveIncomeDTO:
     data = await get_passive_income_data(session, user)
-    pending_coins = data.pending_coins
-    user.coins += pending_coins
+    user.coins += data.pending_coins
     user.last_passive_calculation = int(time.time())
 
     await session.flush()
 
     return ClaimPendingPassiveIncomeDTO(
         coins=user.coins,
-        claimed_coins=pending_coins,
+        claimed_coins=data.pending_coins,
         delta_time=data.delta_time
     )

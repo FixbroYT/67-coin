@@ -8,12 +8,13 @@ class Settings(BaseSettings):
 
     HOST: str
     PORT: int
-    RELOAD: bool
 
     USE_COLOR: bool
 
-    FRONT_URL: str
+    PUBLIC_FRONT_URL: str
     CHAT_ID: str
+
+    PROFILER: bool
     
     class Config:
         env_file = ".env", 

@@ -11,7 +11,7 @@ async def get_user_quests(session: AsyncSession, user_id: int) -> Sequence[UserQ
     return user_quests.all()
 
     
-async def add_quest_connection(session: AsyncSession, user_id: int):
+async def add_quest_connections(session: AsyncSession, user_id: int):
     quests = await session.scalars(select(Quest))
     for quest in quests.all():
         session.add(UserQuest(user_id=user_id, quest_id=quest.id))

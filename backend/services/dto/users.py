@@ -1,6 +1,12 @@
 from pydantic import BaseModel, Field
 
 
+class ClaimPendingPassiveIncomeDTO(BaseModel):
+    coins: int = Field(..., description="Amount of user's coins.")
+    claimed_coins: int = Field(..., description="Amount of claimed coins.")
+    delta_time: int = Field(..., description="Amount of time elapsed since the last passive income claim.")
+
+
 class GetUserInfoDTO(BaseModel):
     coins: int = Field(..., description="Amount of user's coins.")
     xp: int = Field(..., description="Amount of user's xp.")
@@ -16,13 +22,8 @@ class GetUserInfoDTO(BaseModel):
 
 
 class GetPassiveIncomeDataDTO(BaseModel):
+    predicted_coins: int = Field(..., description="Amount of PREDICTED user's coins.")
     pending_coins: int = Field(..., description="Amount of accumulated passive income coins.")
-    delta_time: int = Field(..., description="Amount of time elapsed since the last passive income claim.")
-
-
-class ClaimPendingPassiveIncomeDTO(BaseModel):
-    coins: int = Field(..., description="Amount of user's coins.")
-    claimed_coins: int = Field(..., description="Amount of claimed coins.")
     delta_time: int = Field(..., description="Amount of time elapsed since the last passive income claim.")
 
 

@@ -20,19 +20,6 @@ def _check_buy_conditions(user: User, upgrade: Upgrade, current_cost: int):
         raise TooLowLvlException()
 
 
-async def _claim_passive_income_if_needed(session: AsyncSession, user: User, upgrade: Upgrade) -> ClaimPendingPassiveIncomeDTO | None:
-    if upgrade.type != "passive":
-        return
-
-    passive_income_data = None
-    if user.last_passive_calculation != 0:
-        passive_income_data = await claim_pending_passive_income(session, user.tg_id)
-
-    user.last_passive_calculation = int(time.time())
-
-    return passive_income_data
-
-
 async def buy_upgrade(session: AsyncSession, user: User, upgrade_id: int) -> BuyUpgradeDTO:
     upgrade = await db.upgrades.get_upgrade(session, upgrade_id)
 
@@ -44,9 +31,11 @@ async def buy_upgrade(session: AsyncSession, user: User, upgrade_id: int) -> Buy
     if not user_upgrade:
         user_upgrade = await db.upgrades.add_upgrade_connection(session, user.id, upgrade_id)
 
+    passive_income_data = await claim_pending_passive_income(session, user)
+
     _check_buy_conditions(user, upgrade, user_upgrade.current_price)
 
-    passive_income_data = await _claim_passive_income_if_needed(session, user, upgrade)
+    old_bonus = user_upgrade.bonus
 
     user.coins -= user_upgrade.current_price
     user_upgrade.count += 1
@@ -55,7 +44,10 @@ async def buy_upgrade(session: AsyncSession, user: User, upgrade_id: int) -> Buy
         user.max_energy += upgrade.bonus
         user.energy += upgrade.bonus
 
-    energy_data = await update_user_energy(session, user)
+    energy_data = None
+    if upgrade.type == "max_energy" or upgrade.type == "energy_restoration":
+        energy_data = await update_user_energy(session, user)
+
     click_income = await get_user_income(session, user, "click")
 
     await session.commit()
@@ -65,6 +57,7 @@ async def buy_upgrade(session: AsyncSession, user: User, upgrade_id: int) -> Buy
         upgrade_count=user_upgrade.count,
         cost=user_upgrade.next_price,
         bonus=user_upgrade.bonus,
+        delta_bonus=user_upgrade.bonus - old_bonus,
         click_income=click_income,
         passive_income=passive_income_data,
         energy=energy_data

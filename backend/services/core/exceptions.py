@@ -48,6 +48,10 @@ class UserAlreadyExistsException(GameServiceException):
     def __init__(self, message: str = "The attempt to create the user was unsuccessful because the user already exists."):
         super().__init__(message, status_code=409)
 
+class UserAlreadyIsOnLocation(GameServiceException):
+    def __init__(self, message: str = "The attempt to navigate to this location was unsuccessful because the user is already at that location."):
+        super().__init__(message)
+
 
 class AuthorizationException(Exception):
     def __init__(self, message: str, status_code: int = 401):

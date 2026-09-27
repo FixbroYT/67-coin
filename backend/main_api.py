@@ -4,6 +4,8 @@ import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from middlewares.profiler import PyinstrumentProfilerMiddleware
+
 from api.init import main_router
 from services.core.exceptions import GameServiceException, AuthorizationException
 from services.core.exceptions_handlers import game_service_exceptions_handler, unknown_error_handler
@@ -14,28 +16,23 @@ from logger import setup_logging, get_logger
 setup_logging()
 logger = get_logger(__name__)
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 app.include_router(main_router)
 
 app.add_exception_handler(GameServiceException, game_service_exceptions_handler)
 app.add_exception_handler(AuthorizationException, game_service_exceptions_handler)
 app.add_exception_handler(Exception, unknown_error_handler)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+app.add_middleware(PyinstrumentProfilerMiddleware)
 
 
 async def start_all():
     config = uvicorn.Config(
         app, 
         host=settings.HOST,
-        port=settings.PORT, 
-        reload=settings.RELOAD,
+        port=settings.PORT,
+        workers=2,
         log_config=None
     )
     server = uvicorn.Server(config)

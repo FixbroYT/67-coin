@@ -1,15 +1,18 @@
 import db.requests as db
 
 from services.dto.locations import SetLocationDTO, BuyLocationDTO
-from services.users import get_internal_user, get_user_income
+from services.users import get_user_income, claim_pending_passive_income
 
-from services.core.exceptions import ObjectNotFoundException, PurchasedObjectException, NotEnoughMoneyException
+from services.core.exceptions import ObjectNotFoundException, PurchasedObjectException, NotEnoughMoneyException, UserAlreadyIsOnLocation
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import User, UserLocation, Location
 
 
 async def set_location(session: AsyncSession, location_id: int, user: User) -> SetLocationDTO:
+    if user.location_id == location_id:
+        raise UserAlreadyIsOnLocation()
+
     user_location = await db.locations.get_user_location(session, user.id, location_id)
 
     if not user_location:
@@ -17,12 +20,13 @@ async def set_location(session: AsyncSession, location_id: int, user: User) -> S
 
     user.location_id = location_id
     await session.flush()
+    await session.refresh(user)
     click_income = await get_user_income(session, user, "click")
 
     await session.commit()
 
     return SetLocationDTO(
-        curr_loc_id=location_id,
+        current_loc_id=location_id,
         click_income=click_income
     )
 
@@ -40,16 +44,15 @@ async def buy_location(session: AsyncSession, location_id: int, user: User) -> B
     location = await db.locations.get_location(session, location_id)
     user_location = await db.locations.get_user_location(session, user.id, location_id)
 
+    await claim_pending_passive_income(session, user)
     _check_buy_conditions(user, location, user_location)
 
     user.coins -= location.cost
     await db.locations.add_location_connection(session, user.id, location_id)
-
-    user_locations = await db.locations.get_user_locations(session, user.id)
-
+    
     await session.commit()
 
     return BuyLocationDTO(
         coins=user.coins,
-        loc_ids=[owned_location.location_id for owned_location in user_locations]
+        location_id=location_id
     )

@@ -6,6 +6,7 @@ class GetLDBonus(BaseModel):
 
 
 class GetAllResponse(BaseModel):
+    id: int = Field(..., description="Leadmagnet id.")
     name: str = Field(..., description="Leadmagnet name.")
     reward: int = Field(..., description="Leadmagnet reward.")
     url: str = Field(..., description="Leadmagnet url.")

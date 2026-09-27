@@ -7,13 +7,35 @@ from config import settings
 init(autoreset=True, strip=not settings.USE_COLOR)
 
 
-class AccessLogFormatter(logging.Formatter):
+class BaseColorFormatter(logging.Formatter):
+    def _format_exception(self, record: logging.LogRecord) -> str:
+        parts = []
+
+        if record.exc_info:
+            if not record.exc_text:
+                record.exc_text = self.formatException(record.exc_info)
+            parts.append(record.exc_text)
+
+        if record.stack_info:
+            parts.append(self.formatStack(record.stack_info))
+
+        if not parts:
+            return ""
+
+        traceback_str = "\n".join(parts)
+
+        if settings.USE_COLOR:
+            return f"\n{Fore.RED}{traceback_str}{Style.RESET_ALL}"
+        return f"\n{traceback_str}"
+
+
+class AccessLogFormatter(BaseColorFormatter):
     def format(self, record):
         msg = record.getMessage()
 
         if not settings.USE_COLOR:
             time_str = self.formatTime(record, "%H:%M:%S")
-            return f"{time_str} | {'INFO':<8} | access | {msg}"
+            return f"{time_str} | {'INFO':<8} | access | {msg}" + self._format_exception(record)
 
         time_str = f"{Fore.LIGHTBLACK_EX}{self.formatTime(record, '%H:%M:%S')}{Style.RESET_ALL}"
         level_str = f"{Fore.GREEN}{'INFO':<8}{Style.RESET_ALL}"
@@ -36,15 +58,15 @@ class AccessLogFormatter(logging.Formatter):
         except (ValueError, IndexError):
             pass
 
-        return f"{time_str} | {level_str} | {name_str} | {Style.BRIGHT}{msg}{Style.RESET_ALL}"
+        return f"{time_str} | {level_str} | {name_str} | {Style.BRIGHT}{msg}{Style.RESET_ALL}" + self._format_exception(record)
+    
 
-
-class ColoredConsoleFormatter(logging.Formatter):
+class ColoredConsoleFormatter(BaseColorFormatter):
     def format(self, record):
         if not settings.USE_COLOR:
             time_str = self.formatTime(record, "%H:%M:%S")
             name = record.name.split(".")[-1]
-            return f"{time_str} | {record.levelname:<8} | {name} | {record.getMessage()}"
+            return f"{time_str} | {record.levelname:<8} | {name} | {record.getMessage()}" + self._format_exception(record)
 
         level_color = {
             "INFO": Fore.GREEN,
@@ -59,7 +81,7 @@ class ColoredConsoleFormatter(logging.Formatter):
         name_str = f"{Fore.MAGENTA}{record.name.split('.')[-1]}{Style.RESET_ALL}"
         msg = f"{Style.BRIGHT}{record.getMessage()}{Style.RESET_ALL}"
 
-        return f"{time_str} | {level_str} | {name_str} | {msg}"
+        return f"{time_str} | {level_str} | {name_str} | {msg}" + self._format_exception(record)
 
 
 class MaxLevelFilter(logging.Filter):
